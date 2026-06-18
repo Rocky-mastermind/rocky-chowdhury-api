@@ -3,671 +3,457 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rocky Music — Search & Download</title>
+<title>Rocky Chowdhury Music API</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
-
   * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  :root {
-    --bg: #0f0f0f;
-    --surface: #1a1a1a;
-    --surface2: #272727;
-    --border: #3f3f3f;
-    --red: #ff0000;
-    --red-hover: #cc0000;
-    --text: #f1f1f1;
-    --text-muted: #aaaaaa;
-    --text-dim: #717171;
-  }
-
+  
   body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Roboto', sans-serif;
     min-height: 100vh;
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    font-family: 'Segoe UI', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
   }
 
-  /* ── TOPBAR ── */
-  .topbar {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: var(--bg);
-    border-bottom: 1px solid var(--border);
-    height: 56px;
-    display: flex;
-    align-items: center;
-    padding: 0 16px;
-    gap: 16px;
+  .header {
+    text-align: center;
+    margin: 40px 0 30px;
   }
 
   .logo {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    text-decoration: none;
-    flex-shrink: 0;
+    font-size: 48px;
+    margin-bottom: 10px;
   }
 
-  .logo-icon {
-    background: var(--red);
-    border-radius: 6px;
-    width: 34px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .logo-icon::after {
-    content: '';
-    border-left: 10px solid white;
-    border-top: 6px solid transparent;
-    border-bottom: 6px solid transparent;
-  }
-
-  .logo-text {
-    font-size: 18px;
+  .header h1 {
+    font-size: 28px;
+    color: #fff;
     font-weight: 700;
-    color: var(--text);
-    letter-spacing: -0.5px;
+    letter-spacing: 1px;
   }
 
-  .logo-text span { color: var(--red); }
+  .header p {
+    color: #a78bfa;
+    font-size: 14px;
+    margin-top: 6px;
+  }
 
-  .search-wrap {
-    flex: 1;
-    max-width: 640px;
-    margin: 0 auto;
+  .owner-badge {
+    background: linear-gradient(90deg, #7c3aed, #4f46e5);
+    color: white;
+    padding: 6px 18px;
+    border-radius: 20px;
+    font-size: 13px;
+    display: inline-block;
+    margin-top: 10px;
+  }
+
+  .search-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 20px 0;
+  }
+
+  .search-box {
     display: flex;
-    gap: 0;
+    gap: 10px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 50px;
+    padding: 8px 8px 8px 20px;
+    backdrop-filter: blur(10px);
   }
 
-  .search-input-wrap {
-    flex: 1;
-    display: flex;
-    border: 1px solid var(--border);
-    border-right: none;
-    border-radius: 40px 0 0 40px;
-    overflow: hidden;
-    background: var(--surface);
-  }
-
-  .search-input-wrap:focus-within {
-    border-color: #1c62b9;
-    box-shadow: inset 0 0 0 1px #1c62b9;
-  }
-
-  #searchInput {
+  .search-box input {
     flex: 1;
     background: transparent;
     border: none;
     outline: none;
-    color: var(--text);
-    font-size: 16px;
-    padding: 8px 16px;
-  }
-
-  #searchInput::placeholder { color: var(--text-dim); }
-
-  .clear-btn {
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    padding: 0 12px;
-    cursor: pointer;
-    font-size: 18px;
-    display: none;
-  }
-
-  .clear-btn:hover { color: var(--text); }
-
-  .search-submit {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 0 40px 40px 0;
-    color: var(--text);
-    padding: 0 20px;
-    cursor: pointer;
-    font-size: 18px;
-    transition: background 0.15s;
-  }
-
-  .search-submit:hover { background: #3f3f3f; }
-
-  .owner-chip {
-    background: var(--red);
     color: white;
-    font-size: 12px;
-    font-weight: 500;
-    padding: 4px 12px;
-    border-radius: 4px;
-    white-space: nowrap;
-    flex-shrink: 0;
+    font-size: 16px;
+    padding: 8px 0;
   }
 
-  /* ── HERO (shown before search) ── */
-  .hero {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 80px 16px 40px;
+  .search-box input::placeholder { color: rgba(255,255,255,0.4); }
+
+  .search-btn {
+    background: linear-gradient(90deg, #7c3aed, #4f46e5);
+    border: none;
+    color: white;
+    padding: 12px 28px;
+    border-radius: 40px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    transition: all 0.3s;
+    white-space: nowrap;
+  }
+
+  .search-btn:hover { opacity: 0.85; transform: scale(1.03); }
+  .search-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .status {
+    color: #a78bfa;
+    font-size: 14px;
+    margin: 10px 0;
+    min-height: 20px;
     text-align: center;
   }
 
-  .hero h2 {
-    font-size: 28px;
-    font-weight: 400;
-    margin-bottom: 10px;
-    color: var(--text);
-  }
-
-  .hero p {
-    color: var(--text-muted);
-    font-size: 15px;
-    max-width: 400px;
-    line-height: 1.6;
-  }
-
-  .trending {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    justify-content: center;
-    margin-top: 24px;
-    max-width: 500px;
-  }
-
-  .trend-chip {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    color: var(--text-muted);
-    padding: 6px 14px;
+  .result-card {
+    width: 100%;
+    max-width: 600px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
     border-radius: 20px;
-    font-size: 13px;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-
-  .trend-chip:hover {
-    background: var(--surface);
-    color: var(--text);
-    border-color: #717171;
-  }
-
-  /* ── STATUS ── */
-  .status-bar {
+    padding: 24px;
+    backdrop-filter: blur(20px);
     display: none;
+    animation: fadeIn 0.4s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .result-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .music-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #7c3aed, #4f46e5);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    flex-shrink: 0;
+  }
+
+  .result-info h2 {
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.4;
+    margin-bottom: 6px;
+  }
+
+  .badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    background: rgba(124, 58, 237, 0.3);
+    border: 1px solid rgba(124, 58, 237, 0.5);
+    color: #c4b5fd;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+  }
+
+  .audio-player {
+    width: 100%;
+    margin: 16px 0;
+    border-radius: 10px;
+    accent-color: #7c3aed;
+  }
+
+  .download-btn {
+    width: 100%;
+    background: linear-gradient(90deg, #7c3aed, #4f46e5);
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  .download-btn:hover { opacity: 0.85; transform: translateY(-2px); }
+
+  .short-link {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .short-link span {
+    color: #a78bfa;
+    font-size: 13px;
+    word-break: break-all;
+    flex: 1;
+  }
+
+  .copy-btn {
+    background: rgba(124,58,237,0.3);
+    border: 1px solid rgba(124,58,237,0.5);
+    color: #c4b5fd;
+    padding: 6px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+
+  .copy-btn:hover { background: rgba(124,58,237,0.5); }
+
+  .api-info {
+    width: 100%;
+    max-width: 600px;
+    margin-top: 30px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 20px;
+  }
+
+  .api-info h3 {
+    color: #a78bfa;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+
+  .endpoint {
+    background: rgba(0,0,0,0.3);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    display: flex;
     align-items: center;
     gap: 10px;
-    padding: 12px 24px;
-    color: var(--text-muted);
-    font-size: 14px;
-    max-width: 900px;
-    margin: 0 auto;
+  }
+
+  .method {
+    background: #059669;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .endpoint code {
+    color: #e2e8f0;
+    font-size: 13px;
+    word-break: break-all;
+  }
+
+  .footer {
+    color: rgba(255,255,255,0.3);
+    font-size: 12px;
+    margin-top: 40px;
+    text-align: center;
   }
 
   .spinner {
-    width: 18px;
-    height: 18px;
-    border: 2px solid var(--border);
-    border-top-color: var(--red);
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
     border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-    flex-shrink: 0;
+    animation: spin 0.8s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
   }
 
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* ── RESULT CARD ── */
-  .result-section {
-    display: none;
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 16px;
-    animation: fadeUp 0.3s ease;
-  }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .result-grid {
-    display: grid;
-    grid-template-columns: 1fr 340px;
-    gap: 24px;
-  }
-
-  @media (max-width: 700px) {
-    .result-grid { grid-template-columns: 1fr; }
-  }
-
-  /* Left column */
-  .player-wrap {
-    background: var(--surface);
-    border-radius: 12px;
-    overflow: hidden;
-  }
-
-  .thumb-wrap {
-    position: relative;
-    width: 100%;
-    padding-bottom: 56.25%;
-    background: #000;
-    overflow: hidden;
-  }
-
-  .thumb-wrap img {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    object-fit: cover;
-  }
-
-  .thumb-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(0,0,0,0.4);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .play-icon {
-    width: 64px;
-    height: 64px;
-    background: rgba(0,0,0,0.75);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 28px;
-    color: white;
-  }
-
-  .audio-section {
-    padding: 16px;
-  }
-
-  .audio-section audio {
-    width: 100%;
-    border-radius: 8px;
-    accent-color: var(--red);
-  }
-
-  .song-meta {
-    padding: 16px;
-    border-top: 1px solid var(--border);
-  }
-
-  .song-title {
-    font-size: 18px;
-    font-weight: 500;
-    line-height: 1.4;
-    margin-bottom: 10px;
-  }
-
-  .meta-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-
-  .meta-badge {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    color: var(--text-muted);
-    padding: 3px 10px;
-    border-radius: 4px;
-    font-size: 12px;
-  }
-
-  .meta-badge.red {
-    background: rgba(255,0,0,0.15);
-    border-color: rgba(255,0,0,0.3);
-    color: #ff6b6b;
-  }
-
-  /* Right column */
-  .action-panel {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .panel-card {
-    background: var(--surface);
-    border-radius: 12px;
-    padding: 16px;
-    border: 1px solid var(--border);
-  }
-
-  .panel-card h3 {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 12px;
-  }
-
-  .dl-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    width: 100%;
-    background: var(--red);
-    color: white;
-    border: none;
-    padding: 12px;
-    border-radius: 8px;
-    font-size: 15px;
-    font-weight: 500;
-    cursor: pointer;
-    text-decoration: none;
-    transition: background 0.15s;
-    margin-bottom: 10px;
-  }
-
-  .dl-btn:hover { background: var(--red-hover); }
-
-  .link-box {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 10px 12px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .link-box span {
-    flex: 1;
-    font-size: 12px;
-    color: var(--text-muted);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .copy-btn {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    color: var(--text-muted);
-    padding: 5px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 12px;
-    white-space: nowrap;
-    transition: all 0.15s;
-    flex-shrink: 0;
-  }
-
-  .copy-btn:hover { color: var(--text); background: var(--border); }
-
-  /* API info card */
-  .api-endpoint {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 8px 12px;
-    margin-bottom: 8px;
-    font-size: 12px;
-    color: var(--text-muted);
-    font-family: monospace;
-  }
-
-  .api-endpoint:last-child { margin-bottom: 0; }
-
-  .method-tag {
-    display: inline-block;
-    background: #166534;
-    color: #86efac;
-    padding: 1px 6px;
-    border-radius: 3px;
-    font-size: 10px;
-    font-weight: 700;
-    margin-right: 6px;
-  }
-
-  /* Error */
-  .error-box {
-    display: none;
-    max-width: 900px;
-    margin: 16px auto;
-    padding: 14px 20px;
+  .error-msg {
+    color: #f87171;
     background: rgba(239,68,68,0.1);
     border: 1px solid rgba(239,68,68,0.3);
-    border-radius: 8px;
-    color: #fca5a5;
+    border-radius: 10px;
+    padding: 12px 16px;
     font-size: 14px;
+    width: 100%;
+    max-width: 600px;
+    display: none;
+    text-align: center;
   }
 </style>
 </head>
 <body>
 
-<!-- TOPBAR -->
-<div class="topbar">
-  <a class="logo" href="#">
-    <div class="logo-icon"></div>
-    <span class="logo-text">Rocky<span>Music</span></span>
+<div class="header">
+  <div class="logo">🎵</div>
+  <h1>Rocky Chowdhury Music API</h1>
+  <p>Search any song — get instant download</p>
+  <div class="owner-badge">👑 Owner: Rocky Chowdhury</div>
+</div>
+
+<div class="search-container">
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Search song name... (e.g. Alan Walker Faded)" />
+    <button class="search-btn" id="searchBtn" onclick="searchSong()">🔍 Search</button>
+  </div>
+</div>
+
+<div class="status" id="status"></div>
+<div class="error-msg" id="errorMsg"></div>
+
+<div class="result-card" id="resultCard">
+  <div class="result-header">
+    <div class="music-icon">🎶</div>
+    <div class="result-info">
+      <h2 id="songTitle">Song Title</h2>
+      <div class="badges">
+        <span class="badge" id="qualityBadge">360p</span>
+        <span class="badge">✅ Ready</span>
+      </div>
+    </div>
+  </div>
+
+  <audio controls class="audio-player" id="audioPlayer">
+    <source id="audioSource" src="" type="audio/mpeg">
+  </audio>
+
+  <a class="download-btn" id="downloadBtn" href="#" download>
+    ⬇️ Download Now
   </a>
 
-  <div class="search-wrap">
-    <div class="search-input-wrap">
-      <input type="text" id="searchInput" placeholder="Search songs, artists..." autocomplete="off" />
-      <button class="clear-btn" id="clearBtn" onclick="clearSearch()">✕</button>
-    </div>
-    <button class="search-submit" onclick="searchSong()">🔍</button>
-  </div>
-
-  <div class="owner-chip">Rocky Chowdhury</div>
-</div>
-
-<!-- HERO -->
-<div class="hero" id="hero">
-  <h2>Search any song, get it instantly</h2>
-  <p>Type a song name or paste a YouTube link — download audio in seconds.</p>
-  <div class="trending">
-    <span class="trend-chip" onclick="quickSearch('Alan Walker Faded')">🎵 Alan Walker - Faded</span>
-    <span class="trend-chip" onclick="quickSearch('Sia Chandelier')">🎵 Sia - Chandelier</span>
-    <span class="trend-chip" onclick="quickSearch('Ed Sheeran Shape of You')">🎵 Ed Sheeran - Shape of You</span>
-    <span class="trend-chip" onclick="quickSearch('Eminem Lose Yourself')">🎵 Eminem - Lose Yourself</span>
-    <span class="trend-chip" onclick="quickSearch('Arijit Singh Tum Hi Ho')">🎵 Arijit Singh - Tum Hi Ho</span>
-    <span class="trend-chip" onclick="quickSearch('Weeknd Blinding Lights')">🎵 The Weeknd - Blinding Lights</span>
+  <div class="short-link" id="shortLinkBox">
+    <span id="shortLinkText">Generating link...</span>
+    <button class="copy-btn" onclick="copyLink()">📋 Copy</button>
   </div>
 </div>
 
-<!-- STATUS -->
-<div class="status-bar" id="statusBar">
-  <div class="spinner"></div>
-  <span id="statusText">Searching...</span>
+<div class="api-info">
+  <h3>📡 API Endpoints</h3>
+  <div class="endpoint">
+    <span class="method">GET</span>
+    <code>/ytDl3?link=VIDEO_ID&format=mp3</code>
+  </div>
+  <div class="endpoint">
+    <span class="method">GET</span>
+    <code>/ytDl3?link=VIDEO_ID&format=mp4</code>
+  </div>
+  <div class="endpoint">
+    <span class="method">GET</span>
+    <code>/</code>
+    <code style="color:#a78bfa">— API status</code>
+  </div>
 </div>
 
-<!-- ERROR -->
-<div class="error-box" id="errorBox"></div>
-
-<!-- RESULT -->
-<div class="result-section" id="resultSection">
-  <div class="result-grid">
-
-    <!-- LEFT: Player -->
-    <div>
-      <div class="player-wrap">
-        <div class="thumb-wrap">
-          <img id="thumbImg" src="" alt="thumbnail" />
-          <div class="thumb-overlay">
-            <div class="play-icon">▶</div>
-          </div>
-        </div>
-        <div class="audio-section">
-          <audio controls id="audioPlayer">
-            <source id="audioSrc" src="" type="audio/mpeg">
-          </audio>
-        </div>
-        <div class="song-meta">
-          <div class="song-title" id="songTitle">—</div>
-          <div class="meta-row">
-            <span class="meta-badge red" id="qualityBadge">128kbps</span>
-            <span class="meta-badge">MP3</span>
-            <span class="meta-badge">✅ Ready</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- RIGHT: Actions + API info -->
-    <div class="action-panel">
-
-      <div class="panel-card">
-        <h3>⬇️ Download</h3>
-        <a class="dl-btn" id="dlBtn" href="#" download>
-          ⬇️ Download MP3
-        </a>
-        <div class="link-box">
-          <span id="shortLink">—</span>
-          <button class="copy-btn" onclick="copyLink()">Copy</button>
-        </div>
-      </div>
-
-      <div class="panel-card">
-        <h3>📡 API Endpoints</h3>
-        <div class="api-endpoint">
-          <span class="method-tag">GET</span>/ytDl3?link=VIDEO_ID&format=mp3
-        </div>
-        <div class="api-endpoint">
-          <span class="method-tag">GET</span>/ytDl3?link=VIDEO_ID&format=mp4
-        </div>
-        <div class="api-endpoint">
-          <span class="method-tag">GET</span>/search?q=song+name
-        </div>
-      </div>
-
-      <div class="panel-card">
-        <h3>ℹ️ About</h3>
-        <div style="font-size:13px; color:var(--text-muted); line-height:1.7;">
-          <div>👑 Owner: <span style="color:var(--text)">Rocky Chowdhury</span></div>
-          <div>🌐 Hosted: <span style="color:var(--text)">Vercel (Free)</span></div>
-          <div>📦 Repo: <span style="color:var(--text)">GitHub</span></div>
-          <div>⚡ Version: <span style="color:var(--text)">2.0.0</span></div>
-        </div>
-      </div>
-
-    </div>
-  </div>
+<div class="footer">
+  Made with ❤️ by Rocky Chowdhury • Powered by Vercel
 </div>
 
 <script>
-const API_BASE = window.location.origin;
+  const API_BASE = window.location.origin;
 
-document.getElementById('searchInput').addEventListener('input', function() {
-  document.getElementById('clearBtn').style.display = this.value ? 'block' : 'none';
-});
-
-document.getElementById('searchInput').addEventListener('keypress', e => {
-  if (e.key === 'Enter') searchSong();
-});
-
-function clearSearch() {
-  document.getElementById('searchInput').value = '';
-  document.getElementById('clearBtn').style.display = 'none';
-  document.getElementById('searchInput').focus();
-}
-
-function quickSearch(q) {
-  document.getElementById('searchInput').value = q;
-  document.getElementById('clearBtn').style.display = 'block';
-  searchSong();
-}
-
-function show(id) { document.getElementById(id).style.display = 'flex'; }
-function hide(id) { document.getElementById(id).style.display = 'none'; }
-function showBlock(id) { document.getElementById(id).style.display = 'block'; }
-
-async function searchSong() {
-  const input = document.getElementById('searchInput').value.trim();
-  if (!input) return;
-
-  hide('resultSection');
-  hide('errorBox');
-  hide('hero');
-  show('statusBar');
-  document.getElementById('statusText').textContent = `Searching "${input}"...`;
-
-  try {
-    let videoId = '';
-    const ytMatch = input.match(/(?:v=|youtu\.be\/|shorts\/)([\w-]{11})/);
-
-    if (ytMatch) {
-      videoId = ytMatch[1];
-    } else {
-      document.getElementById('statusText').textContent = 'Finding on YouTube...';
-      const r = await fetch(`${API_BASE}/search?q=${encodeURIComponent(input)}`);
-      const d = await r.json();
-      if (!d.videoId) throw new Error(d.error || 'Song not found');
-      videoId = d.videoId;
-    }
-
-    document.getElementById('statusText').textContent = 'Fetching download link...';
-
-    const r2 = await fetch(`${API_BASE}/ytDl3?link=${videoId}&format=mp3`);
-    const dl = await r2.json();
-    if (!dl.downloadLink) throw new Error(dl.error || 'Download failed');
-
-    // Set thumbnail
-    document.getElementById('thumbImg').src = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
-    document.getElementById('thumbImg').onerror = function() {
-      this.src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
-    };
-
-    // Set audio
-    document.getElementById('audioSrc').src = dl.downloadLink;
-    document.getElementById('audioPlayer').load();
-
-    // Set meta
-    document.getElementById('songTitle').textContent = dl.title || input;
-    document.getElementById('qualityBadge').textContent = dl.quality || '128kbps';
-
-    // Set download button
-    const dlBtn = document.getElementById('dlBtn');
-    dlBtn.href = dl.downloadLink;
-    dlBtn.download = (dl.title || 'song') + '.mp3';
-
-    // Short link
-    document.getElementById('shortLink').textContent = 'Generating...';
-    try {
-      const sr = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(dl.downloadLink)}`);
-      const sl = await sr.text();
-      document.getElementById('shortLink').textContent = sl.startsWith('http') ? sl : dl.downloadLink;
-    } catch(e) {
-      document.getElementById('shortLink').textContent = dl.downloadLink;
-    }
-
-    hide('statusBar');
-    showBlock('resultSection');
-
-  } catch(err) {
-    hide('statusBar');
-    const eb = document.getElementById('errorBox');
-    eb.textContent = '❌ ' + (err.message || 'Something went wrong. Try again.');
-    showBlock('errorBox');
-    showBlock('hero');
-  }
-}
-
-function copyLink() {
-  const text = document.getElementById('shortLink').textContent;
-  navigator.clipboard.writeText(text).then(() => {
-    const btn = document.querySelector('.copy-btn');
-    btn.textContent = '✅ Copied!';
-    setTimeout(() => btn.textContent = 'Copy', 2000);
+  document.getElementById('searchInput').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') searchSong();
   });
-}
+
+  async function searchSong() {
+    const input = document.getElementById('searchInput').value.trim();
+    if (!input) return;
+
+    const btn = document.getElementById('searchBtn');
+    const status = document.getElementById('status');
+    const errorMsg = document.getElementById('errorMsg');
+    const resultCard = document.getElementById('resultCard');
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Searching...';
+    status.innerHTML = '<span class="spinner"></span>Searching for "' + input + '"...';
+    errorMsg.style.display = 'none';
+    resultCard.style.display = 'none';
+
+    try {
+      // Step 1: YouTube search
+      status.innerHTML = '<span class="spinner"></span>Finding on YouTube...';
+      
+      // Use ytDl3 directly with search
+      let videoId = '';
+      
+      // Check if it's a YouTube URL
+      const ytMatch = input.match(/(?:v=|youtu\.be\/|shorts\/)([\w-]{11})/);
+      if (ytMatch) {
+        videoId = ytMatch[1];
+      } else {
+        // Search YouTube via API
+        const searchRes = await fetch(`${API_BASE}/search?q=${encodeURIComponent(input)}`);
+        const searchData = await searchRes.json();
+        if (!searchData.videoId) throw new Error('Song not found');
+        videoId = searchData.videoId;
+      }
+
+      status.innerHTML = '<span class="spinner"></span>Fetching download link...';
+
+      // Step 2: Get download link
+      const dlRes = await fetch(`${API_BASE}/ytDl3?link=${videoId}&format=mp3`);
+      const dlData = await dlRes.json();
+
+      if (!dlData.downloadLink) throw new Error(dlData.error || 'Download failed');
+
+      // Show result
+      document.getElementById('songTitle').textContent = dlData.title || input;
+      document.getElementById('qualityBadge').textContent = dlData.quality || '128kbps';
+      document.getElementById('audioSource').src = dlData.downloadLink;
+      document.getElementById('audioPlayer').load();
+      document.getElementById('downloadBtn').href = dlData.downloadLink;
+      document.getElementById('downloadBtn').setAttribute('download', (dlData.title || 'song') + '.mp3');
+
+      // Short link
+      document.getElementById('shortLinkText').textContent = dlData.downloadLink;
+      try {
+        const shortRes = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(dlData.downloadLink)}`);
+        const shortLink = await shortRes.text();
+        if (shortLink.startsWith('http')) {
+          document.getElementById('shortLinkText').textContent = shortLink;
+          document.getElementById('downloadBtn').setAttribute('data-short', shortLink);
+        }
+      } catch(e) {}
+
+      resultCard.style.display = 'block';
+      status.textContent = '✅ Found: ' + (dlData.title || input);
+
+    } catch (err) {
+      errorMsg.textContent = '❌ Error: ' + (err.message || 'Something went wrong');
+      errorMsg.style.display = 'block';
+      status.textContent = '';
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = '🔍 Search';
+  }
+
+  function copyLink() {
+    const link = document.getElementById('shortLinkText').textContent;
+    navigator.clipboard.writeText(link).then(() => {
+      const btn = document.querySelector('.copy-btn');
+      btn.textContent = '✅ Copied!';
+      setTimeout(() => btn.textContent = '📋 Copy', 2000);
+    });
+  }
 </script>
 </body>
 </html>
