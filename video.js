@@ -10,7 +10,7 @@ const yts = require("yt-search");
 
 const baseApiUrl = async () => {
     const base = await axios.get(
-        `https://raw.githubusercontent.com/RockyChowdhury/rocky-chowdhury-api/refs/heads/main/baseApiUrl.json`
+        `https://raw.githubusercontent.com/Rocky-mastermind/rocky-chowdhury-api/refs/heads/main/baseApiUrl.json`
     );
     return base.data.api;
 };
