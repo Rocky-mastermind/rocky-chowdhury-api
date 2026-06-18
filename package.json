@@ -4,9 +4,6 @@
   "description": "Rocky Chowdhury YouTube Downloader API",
   "author": "Rocky Chowdhury",
   "license": "MIT",
-  "dependencies": {
-    "youtubei.js": "^9.2.0"
-  },
   "engines": {
     "node": ">=18.x"
   }
