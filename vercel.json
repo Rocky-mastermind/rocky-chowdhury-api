@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "name": "rocky-chowdhury-api",
+  "routes": [
+    { "src": "/", "dest": "/api/index.js" },
+    { "src": "/ytDl3", "dest": "/api/ytDl3.js" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
+    }
+  ]
+}
