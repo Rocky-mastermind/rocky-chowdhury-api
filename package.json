@@ -1,0 +1,13 @@
+{
+  "name": "rocky-chowdhury-api",
+  "version": "1.0.0",
+  "description": "Rocky Chowdhury YouTube Downloader API",
+  "author": "Rocky Chowdhury",
+  "license": "MIT",
+  "dependencies": {
+    "@distube/ytdl-core": "^4.14.4"
+  },
+  "engines": {
+    "node": ">=18.x"
+  }
+}
