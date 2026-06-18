@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rocky Chowdhury Music API</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    font-family: 'Segoe UI', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+
+  .header {
+    text-align: center;
+    margin: 40px 0 30px;
+  }
+
+  .logo {
+    font-size: 48px;
+    margin-bottom: 10px;
+  }
+
+  .header h1 {
+    font-size: 28px;
+    color: #fff;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .header p {
+    color: #a78bfa;
+    font-size: 14px;
+    margin-top: 6px;
+  }
+
+  .owner-badge {
+    background: linear-gradient(90deg, #7c3aed, #4f46e5);
+    color: white;
+    padding: 6px 18px;
+    border-radius: 20px;
+    font-size: 13px;
+    display: inline-block;
+    margin-top: 10px;
+  }
+
+  .search-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 20px 0;
+  }
+
+  .search-box {
+    display: flex;
+    gap: 10px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 50px;
+    padding: 8px 8px 8px 20px;
+    backdrop-filter: blur(10px);
+  }
+
+  .search-box input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: white;
+    font-size: 16px;
+    padding: 8px 0;
+  }
+
+  .search-box input::placeholder { color: rgba(255,255,255,0.4); }
+
+  .search-btn {
+    background: linear-gradient(90deg, #7c3aed, #4f46e5);
+    border: none;
+    color: white;
+    padding: 12px 28px;
+    border-radius: 40px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    transition: all 0.3s;
+    white-space: nowrap;
+  }
+
+  .search-btn:hover { opacity: 0.85; transform: scale(1.03); }
+  .search-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .status {
+    color: #a78bfa;
+    font-size: 14px;
+    margin: 10px 0;
+    min-height: 20px;
+    text-align: center;
+  }
+
+  .result-card {
+    width: 100%;
+    max-width: 600px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 20px;
+    padding: 24px;
+    backdrop-filter: blur(20px);
+    display: none;
+    animation: fadeIn 0.4s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .result-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .music-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #7c3aed, #4f46e5);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    flex-shrink: 0;
+  }
+
+  .result-info h2 {
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.4;
+    margin-bottom: 6px;
+  }
+
+  .badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    background: rgba(124, 58, 237, 0.3);
+    border: 1px solid rgba(124, 58, 237, 0.5);
+    color: #c4b5fd;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+  }
+
+  .audio-player {
+    width: 100%;
+    margin: 16px 0;
+    border-radius: 10px;
+    accent-color: #7c3aed;
+  }
+
+  .download-btn {
+    width: 100%;
+    background: linear-gradient(90deg, #7c3aed, #4f46e5);
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  .download-btn:hover { opacity: 0.85; transform: translateY(-2px); }
+
+  .short-link {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .short-link span {
+    color: #a78bfa;
+    font-size: 13px;
+    word-break: break-all;
+    flex: 1;
+  }
+
+  .copy-btn {
+    background: rgba(124,58,237,0.3);
+    border: 1px solid rgba(124,58,237,0.5);
+    color: #c4b5fd;
+    padding: 6px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+
+  .copy-btn:hover { background: rgba(124,58,237,0.5); }
+
+  .api-info {
+    width: 100%;
+    max-width: 600px;
+    margin-top: 30px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 20px;
+  }
+
+  .api-info h3 {
+    color: #a78bfa;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+
+  .endpoint {
+    background: rgba(0,0,0,0.3);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .method {
+    background: #059669;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .endpoint code {
+    color: #e2e8f0;
+    font-size: 13px;
+    word-break: break-all;
+  }
+
+  .footer {
+    color: rgba(255,255,255,0.3);
+    font-size: 12px;
+    margin-top: 40px;
+    text-align: center;
+  }
+
+  .spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .error-msg {
+    color: #f87171;
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.3);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 14px;
+    width: 100%;
+    max-width: 600px;
+    display: none;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">🎵</div>
+  <h1>Rocky Chowdhury Music API</h1>
+  <p>Search any song — get instant download</p>
+  <div class="owner-badge">👑 Owner: Rocky Chowdhury</div>
+</div>
+
+<div class="search-container">
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Search song name... (e.g. Alan Walker Faded)" />
+    <button class="search-btn" id="searchBtn" onclick="searchSong()">🔍 Search</button>
+  </div>
+</div>
+
+<div class="status" id="status"></div>
+<div class="error-msg" id="errorMsg"></div>
+
+<div class="result-card" id="resultCard">
+  <div class="result-header">
+    <div class="music-icon">🎶</div>
+    <div class="result-info">
+      <h2 id="songTitle">Song Title</h2>
+      <div class="badges">
+        <span class="badge" id="qualityBadge">360p</span>
+        <span class="badge">✅ Ready</span>
+      </div>
+    </div>
+  </div>
+
+  <audio controls class="audio-player" id="audioPlayer">
+    <source id="audioSource" src="" type="audio/mpeg">
+  </audio>
+
+  <a class="download-btn" id="downloadBtn" href="#" download>
+    ⬇️ Download Now
+  </a>
+
+  <div class="short-link" id="shortLinkBox">
+    <span id="shortLinkText">Generating link...</span>
+    <button class="copy-btn" onclick="copyLink()">📋 Copy</button>
+  </div>
+</div>
+
+<div class="api-info">
+  <h3>📡 API Endpoints</h3>
+  <div class="endpoint">
+    <span class="method">GET</span>
+    <code>/ytDl3?link=VIDEO_ID&format=mp3</code>
+  </div>
+  <div class="endpoint">
+    <span class="method">GET</span>
+    <code>/ytDl3?link=VIDEO_ID&format=mp4</code>
+  </div>
+  <div class="endpoint">
+    <span class="method">GET</span>
+    <code>/</code>
+    <code style="color:#a78bfa">— API status</code>
+  </div>
+</div>
+
+<div class="footer">
+  Made with ❤️ by Rocky Chowdhury • Powered by Vercel
+</div>
+
+<script>
+  const API_BASE = window.location.origin;
+
+  document.getElementById('searchInput').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') searchSong();
+  });
+
+  async function searchSong() {
+    const input = document.getElementById('searchInput').value.trim();
+    if (!input) return;
+
+    const btn = document.getElementById('searchBtn');
+    const status = document.getElementById('status');
+    const errorMsg = document.getElementById('errorMsg');
+    const resultCard = document.getElementById('resultCard');
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Searching...';
+    status.innerHTML = '<span class="spinner"></span>Searching for "' + input + '"...';
+    errorMsg.style.display = 'none';
+    resultCard.style.display = 'none';
+
+    try {
+      // Step 1: YouTube search
+      status.innerHTML = '<span class="spinner"></span>Finding on YouTube...';
+      
+      // Use ytDl3 directly with search
+      let videoId = '';
+      
+      // Check if it's a YouTube URL
+      const ytMatch = input.match(/(?:v=|youtu\.be\/|shorts\/)([\w-]{11})/);
+      if (ytMatch) {
+        videoId = ytMatch[1];
+      } else {
+        // Search YouTube via API
+        const searchRes = await fetch(`${API_BASE}/search?q=${encodeURIComponent(input)}`);
+        const searchData = await searchRes.json();
+        if (!searchData.videoId) throw new Error('Song not found');
+        videoId = searchData.videoId;
+      }
+
+      status.innerHTML = '<span class="spinner"></span>Fetching download link...';
+
+      // Step 2: Get download link
+      const dlRes = await fetch(`${API_BASE}/ytDl3?link=${videoId}&format=mp3`);
+      const dlData = await dlRes.json();
+
+      if (!dlData.downloadLink) throw new Error(dlData.error || 'Download failed');
+
+      // Show result
+      document.getElementById('songTitle').textContent = dlData.title || input;
+      document.getElementById('qualityBadge').textContent = dlData.quality || '128kbps';
+      document.getElementById('audioSource').src = dlData.downloadLink;
+      document.getElementById('audioPlayer').load();
+      document.getElementById('downloadBtn').href = dlData.downloadLink;
+      document.getElementById('downloadBtn').setAttribute('download', (dlData.title || 'song') + '.mp3');
+
+      // Short link
+      document.getElementById('shortLinkText').textContent = dlData.downloadLink;
+      try {
+        const shortRes = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(dlData.downloadLink)}`);
+        const shortLink = await shortRes.text();
+        if (shortLink.startsWith('http')) {
+          document.getElementById('shortLinkText').textContent = shortLink;
+          document.getElementById('downloadBtn').setAttribute('data-short', shortLink);
+        }
+      } catch(e) {}
+
+      resultCard.style.display = 'block';
+      status.textContent = '✅ Found: ' + (dlData.title || input);
+
+    } catch (err) {
+      errorMsg.textContent = '❌ Error: ' + (err.message || 'Something went wrong');
+      errorMsg.style.display = 'block';
+      status.textContent = '';
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = '🔍 Search';
+  }
+
+  function copyLink() {
+    const link = document.getElementById('shortLinkText').textContent;
+    navigator.clipboard.writeText(link).then(() => {
+      const btn = document.querySelector('.copy-btn');
+      btn.textContent = '✅ Copied!';
+      setTimeout(() => btn.textContent = '📋 Copy', 2000);
+    });
+  }
+</script>
+</body>
+</html>
