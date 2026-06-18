@@ -1,84 +1,71 @@
-// ═══════════════════════════════════════════════════════════
-//   🎬 Rocky Chowdhury API — ytDl3
-//   Owner   : Rocky Chowdhury
-//   Version : 1.0.0
-//   Free    : GitHub + Vercel
-//   Endpoint: /ytDl3?link=VIDEO_ID&format=mp4
-// ═══════════════════════════════════════════════════════════
-
-const ytdl = require("@distube/ytdl-core");
+// ═══════════════════════════════════════════
+//   Rocky Chowdhury API — ytDl3
+//   No API key needed! 100% Free
+// ═══════════════════════════════════════════
 
 module.exports = async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-
-  if (req.method === "OPTIONS") return res.status(200).end();
 
   const { link, format } = req.query;
-
   if (!link) {
     return res.status(400).json({
       error: "Missing ?link= parameter",
-      owner: "Rocky Chowdhury",
+      owner: "Rocky Chowdhury"
     });
   }
 
   try {
-    // link hobe ya full URL ya shudhu video ID — duটাই support kore
-    const videoUrl =
-      link.includes("youtube.com") || link.includes("youtu.be")
-        ? link
-        : `https://www.youtube.com/watch?v=${link}`;
+    const { Innertube } = await import("youtubei.js");
+    const youtube = await Innertube.create();
 
-    const info = await ytdl.getInfo(videoUrl);
-    const title = info.videoDetails.title;
-    const lengthSeconds = info.videoDetails.lengthSeconds;
+    const videoId = link.includes("youtube") || link.includes("youtu.be")
+      ? link.match(/(?:v=|youtu\.be\/|shorts\/)([\w-]{11})/)?.[1]
+      : link;
 
-    let selectedFormat;
-
-    if (format === "mp3") {
-      // MP3 / audio only
-      selectedFormat = ytdl.chooseFormat(info.formats, {
-        quality: "highestaudio",
-        filter: "audioonly",
+    if (!videoId) {
+      return res.status(400).json({
+        error: "Invalid YouTube link or ID",
+        owner: "Rocky Chowdhury"
       });
-    } else {
-      // MP4 — same logic: 360p prefer, then fallback
-      selectedFormat =
-        info.formats.find(
-          (f) =>
-            f.qualityLabel === "360p" &&
-            f.hasVideo &&
-            f.hasAudio &&
-            f.container === "mp4"
-        ) ||
-        info.formats.find(
-          (f) => f.hasVideo && f.hasAudio && f.container === "mp4"
-        ) ||
-        info.formats.find((f) => f.hasVideo && f.hasAudio);
     }
 
-    if (!selectedFormat) {
+    const info = await youtube.getInfo(videoId);
+    const title = info.basic_info.title;
+
+    let streamingData;
+
+    if (format === "mp3") {
+      streamingData = info.chooseFormat({
+        type: "audio",
+        quality: "best"
+      });
+    } else {
+      // mp4 — 360p prefer
+      streamingData =
+        info.chooseFormat({ type: "video+audio", quality: "360p" }) ||
+        info.chooseFormat({ type: "video+audio", quality: "best" });
+    }
+
+    if (!streamingData || !streamingData.url) {
       return res.status(404).json({
-        error: "No downloadable format found for this video",
-        owner: "Rocky Chowdhury",
+        error: "No downloadable format found",
+        owner: "Rocky Chowdhury"
       });
     }
 
     return res.status(200).json({
       title: title,
-      quality: selectedFormat.qualityLabel || selectedFormat.audioBitrate + "kbps",
-      downloadLink: selectedFormat.url,
-      duration: lengthSeconds,
+      quality: streamingData.quality_label || "360p",
+      downloadLink: streamingData.url,
       format: format || "mp4",
-      owner: "Rocky Chowdhury",
+      owner: "Rocky Chowdhury"
     });
+
   } catch (err) {
-    console.error("[Rocky API Error]", err.message);
+    console.error("[Rocky API]", err.message);
     return res.status(500).json({
-      error: err.message || "Internal Server Error",
-      owner: "Rocky Chowdhury",
+      error: err.message,
+      owner: "Rocky Chowdhury"
     });
   }
 };
