@@ -1,26 +1,5 @@
 const https = require("https");
 
-function post(hostname, path, data, headers) {
-  return new Promise((resolve, reject) => {
-    const body = typeof data === "string" ? data : new URLSearchParams(data).toString();
-    const req = https.request({
-      hostname, path, method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "Content-Length": Buffer.byteLength(body),
-        ...headers
-      }
-    }, (res) => {
-      let d = "";
-      res.on("data", c => d += c);
-      res.on("end", () => { try { resolve(JSON.parse(d)); } catch(e) { resolve(d); } });
-    });
-    req.on("error", reject);
-    req.write(body);
-    req.end();
-  });
-}
-
 module.exports = async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   const { link, format } = req.query;
@@ -29,43 +8,29 @@ module.exports = async (req, res) => {
   try {
     const videoId = link.match(/(?:v=|youtu\.be\/|shorts\/)([\w-]{11})/)?.[1] || link;
 
-    // Step 1: analyze
-    const analyze = await post(
-      "www.y2mate.com",
-      "/mates/analyzeV2/ajax",
-      { k_query: `https://www.youtube.com/watch?v=${videoId}`, k_page: "home", hl: "en", q_auto: 0 },
-      { "Referer": "https://www.y2mate.com/", "Origin": "https://www.y2mate.com" }
-    );
+    const options = {
+      method: "GET",
+      hostname: "youtube-mp36.p.rapidapi.com",
+      path: `/dl?id=${videoId}`,
+      headers: {
+        "x-rapidapi-key": process.env.RAPID_API_KEY,
+        "x-rapidapi-host": "youtube-mp36.p.rapidapi.com"
+      }
+    };
 
-    const title = analyze?.title || "Unknown Title";
-    let key;
-
-    if (format === "mp3") {
-      key = analyze?.links?.mp3?.mp3128?.k;
-    } else {
-      key = analyze?.links?.mp4?.["360p"]?.k ||
-            analyze?.links?.mp4?.["720p"]?.k ||
-            Object.values(analyze?.links?.mp4 || {})[0]?.k;
-    }
-
-    if (!key) return res.status(404).json({ error: "No format found", owner: "Rocky Chowdhury" });
-
-    // Step 2: convert
-    const convert = await post(
-      "www.y2mate.com",
-      "/mates/convertV2/index",
-      { vid: videoId, k: key },
-      { "Referer": "https://www.y2mate.com/", "Origin": "https://www.y2mate.com" }
-    );
-
-    const downloadLink = convert?.dlink;
-    if (!downloadLink) return res.status(404).json({ error: "Convert failed", owner: "Rocky Chowdhury" });
+    const data = await new Promise((resolve, reject) => {
+      https.request(options, (r) => {
+        let d = "";
+        r.on("data", c => d += c);
+        r.on("end", () => resolve(JSON.parse(d)));
+      }).on("error", reject).end();
+    });
 
     return res.status(200).json({
-      title,
-      quality: format === "mp3" ? "128kbps" : "360p",
-      downloadLink,
-      format: format || "mp4",
+      title: data.title,
+      quality: "128kbps",
+      downloadLink: data.link,
+      format: "mp3",
       owner: "Rocky Chowdhury"
     });
 
