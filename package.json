@@ -5,7 +5,7 @@
   "author": "Rocky Chowdhury",
   "license": "MIT",
   "dependencies": {
-    "@distube/ytdl-core": "^4.14.4"
+    "youtubei.js": "^9.2.0"
   },
   "engines": {
     "node": ">=18.x"
